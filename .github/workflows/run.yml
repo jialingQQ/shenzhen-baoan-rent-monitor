@@ -1,18 +1,31 @@
-name: Baoan Rent Monitor
+name: Baoan Gist Mail Monitor
 on:
   schedule:
-    # UTC时间，下面是【北京时间每天早上8点执行】(UTC 0点)
+    # UTC 0点 = 北京时间早上8点，每日一次
     - cron: '0 0 * * *'
-  workflow_dispatch: # 支持手动点按钮随时运行测试
+  workflow_dispatch:
 
 jobs:
-  run:
+  scan:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: Install python dependencies
-        run: |
-          pip install requests beautifulsoup4
+      - name: Install python lib
+        run: pip install requests beautifulsoup4
       - name: Run monitor script
         run: python monitor.py
+        env:
+          # 直接复用你仓库已有的secret，不用新建
+          GIST_ID: ${{ secrets.GIST_ID }}
+          GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+      - name: Send Email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.github.com
+          server_port: 465
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          to: ${{ secrets.MAIL_TO }}
+          subject: 【深圳保租房监控-宝安站点】通知
+          body: ${{ env.EMAIL_BODY }}
