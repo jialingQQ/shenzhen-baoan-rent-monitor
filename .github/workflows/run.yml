@@ -1,0 +1,18 @@
+name: Baoan Rent Monitor
+on:
+  schedule:
+    # UTC时间，下面是【北京时间每天早上8点执行】(UTC 0点)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 支持手动点按钮随时运行测试
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install python dependencies
+        run: |
+          pip install requests beautifulsoup4
+      - name: Run monitor script
+        run: python monitor.py
