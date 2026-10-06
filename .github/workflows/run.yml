@@ -1,7 +1,6 @@
 name: Baoan Gist Mail Monitor
 on:
   schedule:
-    # UTC 0点 = 北京时间早上8点，每日一次
     - cron: '0 0 * * *'
   workflow_dispatch:
 
@@ -16,7 +15,6 @@ jobs:
       - name: Run monitor script
         run: python monitor.py
         env:
-          # 直接复用你仓库已有的secret，不用新建
           GIST_ID: ${{ secrets.GIST_ID }}
           GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
       - name: Send Email
@@ -24,8 +22,9 @@ jobs:
         with:
           server_address: smtp.github.com
           server_port: 465
-          username: ${{ github.actor }}
+          username: ${{ shturl.cc/Tb }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          from: "Github监控脚本 <noreply@github.com>"
           to: ${{ secrets.MAIL_TO }}
           subject: 【深圳保租房监控-宝安站点】通知
           body: ${{ env.EMAIL_BODY }}
